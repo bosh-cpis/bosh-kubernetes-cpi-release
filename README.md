@@ -29,7 +29,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 
 - disk migration (similar to docker cpi)
 - lessen necessary perms on default container (what's agent doing?)
-- works with gcr/ecr/on-prem registry
+- works with gcr/ecr/ibm/harbor/on-prem registry
   - add authentication
 - disable ntpdate updates
 - gcr acceptance tests
@@ -38,6 +38,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 - better error detection on disk creation
   - Warning   ProvisioningFailed  storageclass.storage.k8s.io "standard" not found (sl)
 - automatically pick disk class default from a list?
+- credential discovery for incluster vs outofcluster
 
 ### Enchancement
 

@@ -1,0 +1,6 @@
+creds.yml
+gcr-password.json
+kubeconfig
+kubeconfigca.pem
+jk
+state.json

@@ -1,0 +1,3 @@
+kubectl create secret -n bosh docker-registry regsecret -n bosh --docker-server=https://gcr.io --docker-username=_json_key --docker-password="$(cat gcr-password.json)" --docker-email foo
+
+use ibm registry?

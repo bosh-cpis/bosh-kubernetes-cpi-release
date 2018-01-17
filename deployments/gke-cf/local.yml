@@ -1,0 +1,7 @@
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=garden/properties/garden/apparmor_profile?
+  value: ""
+
+- type: replace
+  path: /instance_groups/name=diego-cell/instances
+  value: 3

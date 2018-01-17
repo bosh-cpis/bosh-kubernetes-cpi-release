@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bosh-ingress
+spec:
+  selector:
+    director: foo
+  ports:
+  - name: agent
+    protocol: TCP
+    port: 6868
+    targetPort: 6868
+  - name: director
+    protocol: TCP
+    port: 25555
+    targetPort: 25555
+  - name: blobstore
+    protocol: TCP
+    port: 25250
+    targetPort: 25250
+  - name: nats
+    protocol: TCP
+    port: 4222
+    targetPort: 4222
+  - name: ssh
+    protocol: TCP
+    port: 22
+    targetPort: 22
+  type: LoadBalancer
