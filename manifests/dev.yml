@@ -1,0 +1,6 @@
+- type: replace
+  path: /releases/name=bosh-kubernetes-cpi/url
+  value: file://((kubernetes_cpi_path))
+
+- type: remove
+  path: /releases/name=bosh-kubernetes-cpi/sha1

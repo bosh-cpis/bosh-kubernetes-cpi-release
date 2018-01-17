@@ -1,0 +1,21 @@
+# todo remove cusomization for apparmor
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=garden/properties/garden/apparmor_profile?
+  value: ""
+
+- type: replace
+  path: /instance_groups/name=diego-cell/instances
+  value: 3
+
+# todo remove cusomization for swap (pending final release)
+- type: replace
+  path: /releases/name=garden-runc
+  value:
+    name: garden-runc
+    version: 1.13.1+dev.1
+    url: https://s3.amazonaws.com/dk-shared-assets/garden-with-swap-config
+    sha1: 9b32493e9eeaa0f31ed03f978ae2af5491290a1a
+
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=garden/properties/garden/disable_swap_limit?
+  value: true

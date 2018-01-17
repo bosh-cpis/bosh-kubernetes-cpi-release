@@ -1,0 +1,15 @@
+---
+name: kubernetes_cpi
+
+dependencies:
+- golang-1-darwin
+- golang-1-linux
+
+files:
+- "**/*.go"
+- "**/*.h"
+- "**/*.s"
+
+excluded_files:
+- github.com/onsi/ginkgo/**/*
+- github.com/onsi/gomega/**/*

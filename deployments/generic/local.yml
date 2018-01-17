@@ -1,0 +1,7 @@
+- type: replace
+  path: /releases/name=bosh/url
+  value: https://s3.amazonaws.com/bosh-alpha-compiled-release-tarballs/bosh-263.4.0%2Bdev.1-ubuntu-trusty-3468.17-20180112-184720-358060911-20180112184724.tgz
+
+- type: replace
+  path: /releases/name=bosh/sha1
+  value: c6607dfdd66980714a0a5fca4de1de27c1794780

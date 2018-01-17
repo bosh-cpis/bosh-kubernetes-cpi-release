@@ -1,0 +1,42 @@
+---
+name: kubernetes_cpi_pdbctrl
+
+description: |
+  Enable automatic PDB creation based on instance groups. Controller will reach out to the Director on periodic basis and query for all deployments and instances. Based on that information PDB will automatically be updated.
+
+templates:
+  ctl: bin/ctl
+  config.json: config/config.json
+
+packages:
+- kubernetes_cpi
+
+properties:
+  sync_interval:
+    description: "Default interval for syncing PDBs"
+    default: "1m"
+
+  kube.namespace:
+    description: "Default namespace for all resource management"
+    default: "bosh"
+  kube.service_account.override_api_host:
+    description: "Override Kubernetes service host"
+    default: ""
+    example: "kubernetes.default.svc.cluster.local"
+  kube.service_account.override_api_port:
+    description: "Override Kubernetes service port"
+    default: 443
+
+  director.host:
+    description: "Director host"
+    example: "192.168.50.4"
+  director.port:
+    description: "Director port"
+    default: 25555
+  director.tls.cert.ca:
+    description: "CA certificate to verify Director certificate (uses system CA certificates by default)"
+    default: ""
+  director.client:
+    description: "Director client (username in case of basic auth)"
+  director.client_secret:
+    description: "Director client secret (password in case of basic auth)"

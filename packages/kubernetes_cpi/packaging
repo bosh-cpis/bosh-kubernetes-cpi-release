@@ -1,0 +1,30 @@
+set -e -x
+
+if [ -z "$BOSH_PACKAGES_DIR" ]; then
+	pkg_dir=$(readlink -nf /var/vcap/packages/golang-1-darwin)
+else
+	pkg_dir=$BOSH_PACKAGES_DIR/golang-1-darwin
+fi
+
+source ${pkg_dir}/bosh/compile.env.generic
+
+mkdir ../src && cp -a * ../src/ && mv ../src ./src
+
+export GOPATH=$GOPATH:$PWD/src/src2:$PWD/src/src3
+
+mkdir -p $BOSH_INSTALL_TARGET/bin
+
+export GOARCH=amd64
+export GOOS=darwin
+export GOTOOLDIR=$GOROOT/pkg/darwin_amd64
+go build -o $BOSH_INSTALL_TARGET/bin/cpi-darwin src/github.com/cppforlife/bosh-kubernetes-cpi/main/*.go
+
+export GOARCH=amd64
+export GOOS=linux
+export GOTOOLDIR=$GOROOT/pkg/linux_amd64
+go build -o $BOSH_INSTALL_TARGET/bin/cpi-linux src/github.com/cppforlife/bosh-kubernetes-cpi/main/*.go
+
+export GOARCH=amd64
+export GOOS=linux
+export GOTOOLDIR=$GOROOT/pkg/linux_amd64
+go build -o $BOSH_INSTALL_TARGET/bin/pdbctrl src/github.com/cppforlife/bosh-kubernetes-cpi/pdbctrl/*.go

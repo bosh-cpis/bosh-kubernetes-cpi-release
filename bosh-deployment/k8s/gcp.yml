@@ -1,0 +1,38 @@
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties/labels?/director
+  value: foo
+
+# Assume (todo?) that internal_ip also hosts kubernetes api on 443
+- type: replace
+  path: /instance_groups/name=bosh/properties/service_account/override_api_host?
+  value: ((kube_api))
+
+# PDB controller
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=kubernetes_cpi_pdbctrl/properties/kube?/service_account/override_api_host
+  value: ((kube_api))
+
+# Registry
+- type: replace
+  path: /instance_groups/name=bosh/properties/registry?/backend
+  value: gcr
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/registry?/auth/password
+  value: ((gcr_password))
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/image_pull_secret_name?
+  value: ((gcr_pull_secret_name))
+
+- type: replace
+  path: /cloud_provider/properties/registry?/backend
+  value: gcr
+
+- type: replace
+  path: /cloud_provider/properties/registry?/auth/password
+  value: ((gcr_password))
+
+- type: replace
+  path: /cloud_provider/properties/image_pull_secret_name?
+  value: ((gcr_pull_secret_name))

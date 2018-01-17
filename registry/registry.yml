@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dk
+  labels:
+    foo: dk
+spec:
+  containers:
+  - name: registry
+    image: localhost:5000/bosh.io/stemcells@sha256:61629d073d09f1b30666acd70d8c018df046fe4dd0215bfb38620944d3c2642b
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+    env:
+    - name: REGISTRY_HTTP_ADDR
+      value: :7000
+    ports:
+    - containerPort: 7000
+      name: registry
+      protocol: TCP

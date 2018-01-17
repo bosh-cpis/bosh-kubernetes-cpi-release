@@ -1,0 +1,164 @@
+---
+name: kubernetes_cpi
+
+templates:
+  cpi.erb: bin/cpi
+  cpi.json.erb: config/cpi.json
+
+packages:
+- kubernetes_cpi
+
+properties:
+  config:
+    description: "Kubernetes config as a string. For example see minikube's config in ~/.kube/config."
+  namespace:
+    description: "Default namespace for all resource management"
+    default: "bosh"
+
+  service_account.enabled:
+    description: "If service account is enabled, `config` does not have to be specified."
+    default: false
+  service_account.override_api_host:
+    description: "Override Kubernetes service host"
+    default: ""
+    example: "kubernetes.default.svc.cluster.local"
+  service_account.override_api_port:
+    description: "Override Kubernetes service port"
+    default: 443
+
+  image_pull_secret_name:
+    description: "Secret name that contains registry credentials for pulling images"
+    default: ""
+
+  registry.backend:
+    description: "Type of registry backend. Possible values: none, docker-no-auth, docker, gcr"
+    default: "none"
+
+  registry.host:
+    description: "Registry host will use to connect for uploading stemcells. `registry` section is optional if heavy stemcells are not used."
+    example: "192.168.99.100:5000"
+  registry.pull_host:
+    description: "Alternative registry host used for pulling images. By default `registry.host` is used if value is empty."
+    default: ""
+    example: "localhost:5000"
+
+  registry.auth.url:
+    description: "Auth URL. Determined by default for GCR."
+    example: "https://gcr.io"
+  registry.auth.user:
+    description: "Auth user. Determined by default for GCR."
+    example: "_json_key"
+  registry.auth.password:
+    description: "Auth password. For GCR, password is a service account JSON key with GCS bucket permissions."
+    example: "{ ... }"
+
+  docker.host:
+    description: "Docker host will use to connect (tcp or unix) for uploading stemcells. `docker` section is optional if heavy stemcells are not used."
+    default: ""
+    example: "tcp://10.10.0.62:32768"
+  docker.api_version:
+    description: "Expected Docker API version"
+    default: "1.22"
+  docker.tls.cert:
+    type: certificate
+    description: |
+      Mutual TLS client certificate for connecting to Docker daemon.
+      Optional with unix:// host, otherwise required.
+
+  # todo remove
+  ntp:
+    description: List of ntp server IPs. pool.ntp.org attempts to return IPs closest to your location, but you can still specify if needed.
+    default:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+
+  agent.blobstore.credentials_source:
+    description: Where to get AWS credentials for the virtualbox cpi. This can be set to `static` for to use an `access_key_id` and `secret_access_key` or `env_or_profile` to get the credentials from environment variables or an EC2 instance profile.
+  agent.blobstore.access_key_id:
+    description: AWS access_key_id for agent used by s3 blobstore plugin (Required when blobstore.credentials_source is set to `static`)
+  agent.blobstore.secret_access_key:
+    description: AWS secret_access_key for agent used by s3 blobstore plugin (Required when blobstore.credentials_source is set to `static`)
+  agent.blobstore.s3_region:
+    description: AWS region for agent used by s3 blobstore plugin (Required when blobstore.credentials_source is set to `static`)
+  agent.blobstore.address:
+    description: Address for agent to connect to blobstore server used by simple blobstore plugin
+  agent.blobstore.use_ssl:
+    description: Whether the agent blobstore plugin should use SSL to connect to the blobstore server
+  agent.blobstore.s3_port:
+    description: Port of agent blobstore server used by s3 blobstore plugin
+  agent.blobstore.host:
+    description: Host of agent blobstore server used by simple blobstore plugin
+  agent.blobstore.s3_force_path_style:
+    description: Whether the agent blobstore plugin will always use path style for bucket access
+  agent.blobstore.ssl_verify_peer:
+    description: Whether the agent blobstore plugin should verify its peer when using SSL
+  agent.blobstore.s3_multipart_threshold:
+    description: Agent blobstore threshold for multipart uploads
+  agent.blobstore.s3_signature_version:
+    description: Signature version used to connect to an s3 blobstore
+  blobstore.provider:
+    description: Provider of the blobstore used by director and agent (dav|simple|s3)
+    default: 'dav'
+  blobstore.bucket_name:
+    description: AWS S3 Bucket used by s3 blobstore plugin
+  blobstore.credentials_source:
+    description: Where to get AWS credentials for the virtualbox cpi. This can be set to `static` for to use an `access_key_id` and `secret_access_key` or `env_or_profile` to get the credentials from environment variables or an EC2 instance profile.
+    default: 'static'
+  blobstore.access_key_id:
+    description: AWS access_key_id used by s3 blobstore plugin (Required when blobstore.credentials_source is set to `static`)
+    default: null
+  blobstore.secret_access_key:
+    description: AWS secret_access_key used by s3 blobstore plugin (Required when blobstore.credentials_source is set to `static`)
+    default: null
+  blobstore.s3_region:
+    description: AWS region used by s3 blobstore plugin (Required when blobstore.credentials_source is set to `static`)
+  blobstore.use_ssl:
+    description: Whether the simple blobstore plugin should use SSL to connect to the blobstore server
+    default: true
+  blobstore.s3_port:
+    description: Port of blobstore server used by s3 blobstore plugin
+    default: 443
+  blobstore.host:
+    description: Host of blobstore server used by simple blobstore plugin
+  blobstore.s3_force_path_style:
+    description: Whether the blobstore plugin will always use path style for bucket access
+    default: false
+  blobstore.ssl_verify_peer:
+    description: Whether the simple blobstore plugin should verify its peer when using SSL
+  blobstore.s3_multipart_threshold:
+    description: Simple blobstore threshold for multipart uploads
+  blobstore.s3_signature_version:
+    description: Signature version used to connect to an s3 blobstore
+  blobstore.path:
+    description: local blobstore path
+  blobstore.address:
+    description: Address of blobstore server used by simple blobstore plugin
+  blobstore.port:
+    description: Port of blobstore server used by simple blobstore plugin
+    default: 25250
+  blobstore.agent.user:
+    description: Username agent uses to connect to blobstore used by simple blobstore plugin
+  blobstore.agent.password:
+    description: Password agent uses to connect to blobstore used by simple blobstore plugin
+
+  agent.mbus:
+    description: Agent mbus
+  nats.user:
+    description: Username to connect to nats with
+    default: nats
+  nats.password:
+    description: Password to connect to nats with
+  agent.nats.address:
+    description: Address of the nats server
+  nats.address:
+    description: Address of the nats server
+  nats.port:
+    description: Port that the nats server listens on
+    default: 4222
+
+  env.http_proxy:
+    description: Http proxy to connect to cloud API's
+  env.https_proxy:
+    description: Https proxy to connect to cloud API's
+  env.no_proxy:
+    description: No proxy environment variable

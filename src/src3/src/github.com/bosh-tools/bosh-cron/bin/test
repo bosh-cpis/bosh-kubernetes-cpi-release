@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+bin=$(dirname $0)
+
+go fmt github.com/bosh-tools/bosh-cron/...
+go build -o $bin/cron github.com/bosh-tools/bosh-cron

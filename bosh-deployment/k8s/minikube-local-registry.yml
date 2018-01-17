@@ -1,0 +1,31 @@
+# do not specify any docker daemon for stemcell storage
+- type: remove
+  path: /instance_groups/name=bosh/properties/docker
+
+- type: remove
+  path: /cloud_provider/properties/docker
+
+# assumes that registry was started on minikube's docker daemon on port 5000
+- type: replace
+  path: /instance_groups/name=bosh/properties/registry?/backend
+  value: docker-no-auth
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/registry?/host
+  value: ((internal_ip)):5000
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/registry/pull_host?
+  value: localhost:5000
+
+- type: replace
+  path: /cloud_provider/properties/registry?/backend
+  value: docker-no-auth
+
+- type: replace
+  path: /cloud_provider/properties/registry?/host
+  value: ((internal_ip)):5000
+
+- type: replace
+  path: /cloud_provider/properties/registry/pull_host?
+  value: localhost:5000
