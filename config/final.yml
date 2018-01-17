@@ -1,6 +1,6 @@
 ---
 final_name: bosh-kubernetes-cpi
 blobstore:
-  provider: local
+  provider: s3
   options:
-    blobstore_path: /tmp/kube-blobs
+    bucket_name: bosh-kubernetes-cpi-blobs
