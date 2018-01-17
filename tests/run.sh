@@ -16,11 +16,11 @@ echo "-----> `date`: Create kube namespace"
 kubectl create -f ns.yml || true
 
 echo "-----> `date`: Create env"
-bosh create-env ~/workspace/bosh-deployment5/bosh.yml \
-  -o ~/workspace/bosh-deployment5/k8s/cpi.yml \
-  -o ~/workspace/bosh-deployment5/k8s/minikube.yml \
-  -o ~/workspace/bosh-deployment5/jumpbox-user.yml \
-  -o ~/workspace/bosh-deployment5/k8s/minikube-local-registry.yml \
+bosh create-env ~/workspace/bosh-deployment/bosh.yml \
+  -o ../bosh-deployment/k8s/cpi.yml \
+  -o ../bosh-deployment/k8s/minikube.yml \
+  -o ../bosh-deployment/k8s/minikube-local-registry.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
   -o ../manifests/dev.yml \
   -o ../manifests/local-stemcell.yml \
   --state=state.json \
@@ -39,10 +39,10 @@ export BOSH_CLIENT=admin
 export BOSH_CLIENT_SECRET="$(bosh int creds.yml --path /admin_password)"
 
 echo "-----> `date`: Update cloud config"
-bosh -n update-cloud-config ~/workspace/bosh-deployment5/k8s/cloud-config.yml
+bosh -n update-cloud-config ../bosh-deployment/k8s/cloud-config.yml
 
 echo "-----> `date`: Update runtime config"
-bosh -n update-runtime-config ~/workspace/bosh-deployment5/runtime-configs/dns.yml \
+bosh -n update-runtime-config ~/workspace/bosh-deployment/runtime-configs/dns.yml \
   --vars-store rc-creds.yml
 
 echo "-----> `date`: Upload stemcell"
@@ -50,11 +50,11 @@ echo "-----> `date`: Upload stemcell"
 bosh -n upload-stemcell $stemcell_path
 
 echo "-----> `date`: Create env second time to test persistent disk attachment"
-bosh create-env ~/workspace/bosh-deployment5/bosh.yml \
-  -o ~/workspace/bosh-deployment5/k8s/cpi.yml \
-  -o ~/workspace/bosh-deployment5/k8s/minikube.yml \
-  -o ~/workspace/bosh-deployment5/jumpbox-user.yml \
-  -o ~/workspace/bosh-deployment5/k8s/minikube-local-registry.yml \
+bosh create-env ~/workspace/bosh-deployment/bosh.yml \
+  -o ../bosh-deployment/k8s/cpi.yml \
+  -o ../bosh-deployment/k8s/minikube.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
+  -o ../bosh-deployment/k8s/minikube-local-registry.yml \
   -o ../manifests/dev.yml \
   -o ../manifests/local-stemcell.yml \
   --state=state.json \
@@ -101,11 +101,11 @@ echo "-----> `date`: Clean up disks, etc."
 bosh -n -d zookeeper clean-up --all
 
 echo "-----> `date`: Deleting env"
-bosh delete-env ~/workspace/bosh-deployment5/bosh.yml \
-  -o ~/workspace/bosh-deployment5/k8s/cpi.yml \
-  -o ~/workspace/bosh-deployment5/k8s/minikube.yml \
-  -o ~/workspace/bosh-deployment5/jumpbox-user.yml \
-  -o ~/workspace/bosh-deployment5/k8s/minikube-local-registry.yml \
+bosh delete-env ~/workspace/bosh-deployment/bosh.yml \
+  -o ../bosh-deployment/k8s/cpi.yml \
+  -o ../bosh-deployment/k8s/minikube.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
+  -o ../bosh-deployment/k8s/minikube-local-registry.yml \
   -o ../manifests/dev.yml \
   -o ../manifests/local-stemcell.yml \
   --state=state.json \
