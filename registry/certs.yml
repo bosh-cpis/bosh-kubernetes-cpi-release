@@ -1,0 +1,13 @@
+variables:
+- name: docker_ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: ca
+
+- name: registry_tls
+  type: certificate
+  options:
+    ca: docker_ca
+    common_name: ((internal_ip))
+    alternative_names: [((internal_ip))]

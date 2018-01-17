@@ -1,0 +1,6 @@
+- type: replace
+  path: /resource_pools/name=vms/stemcell/url
+  value: file://((kubernetes_stemcell_path))
+
+- type: remove
+  path: /resource_pools/name=vms/stemcell/sha1?

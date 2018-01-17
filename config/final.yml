@@ -1,0 +1,6 @@
+---
+final_name: bosh-kubernetes-cpi
+blobstore:
+  provider: local
+  options:
+    blobstore_path: /tmp/kube-blobs
