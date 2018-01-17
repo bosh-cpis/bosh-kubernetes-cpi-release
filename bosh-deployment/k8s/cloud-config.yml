@@ -1,0 +1,34 @@
+azs:
+- name: z1
+- name: z2
+- name: z3
+
+vm_types:
+- name: default
+  cloud_properties:
+    resources: &vm_res
+      requests:
+        memory: 64Mi
+      limits:
+        memory: 1Gi
+
+disk_types:
+- name: default
+  disk_size: 1024
+  cloud_properties:
+    storage_class: standard
+
+networks:
+- name: default
+  type: dynamic
+  subnets:
+  - name: foo
+    azs: [z1, z2, z3]
+    dns: [8.8.8.8]
+
+compilation:
+  workers: 5
+  az: z1
+  reuse_compilation_vms: true
+  vm_type: default
+  network: default

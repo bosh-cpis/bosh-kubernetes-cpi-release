@@ -1,0 +1,62 @@
+---
+- type: replace
+  path: /releases/-
+  value:
+    name: bosh-kubernetes-cpi
+    url: file:///tmp/kube-cpi
+    sha1: foo
+
+- type: replace
+  path: /resource_pools/name=vms/stemcell?
+  value:
+    url: https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent?v=3468.17
+    sha1: 1dad6d85d6e132810439daba7ca05694cec208ab
+
+# Configure VM size
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties?
+  value:
+    resources:
+      requests:
+        memory: 64Mi
+      limits:
+        memory: 1Gi
+
+- type: replace
+  path: /networks/name=default
+  value:
+    name: default
+    type: dynamic
+    dns: [8.8.8.8]
+
+- type: replace
+  path: /disk_pools/name=disks/disk_size
+  value: 32_768
+
+- type: replace
+  path: /disk_pools/name=disks/cloud_properties?
+  value:
+    storage_class: standard
+
+# Add CPI job
+- type: replace
+  path: /instance_groups/name=bosh/jobs/-
+  value: &cpi_job
+    name: kubernetes_cpi
+    release: bosh-kubernetes-cpi
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/director/cpi_job?
+  value: kubernetes_cpi
+
+- type: replace
+  path: /cloud_provider/template?
+  value: *cpi_job
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/service_account?/enabled
+  value: true
+
+- type: replace
+  path: /cloud_provider/properties/config?
+  value: ((kube_config))
