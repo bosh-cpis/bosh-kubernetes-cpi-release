@@ -6,14 +6,20 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 
 ... example: gke ...
 
+## Use with Kube environments
+
+- [GKE](docs/gke.md)
+- [IBM](docs/ibm.md)
+- [Minikube](docs/minikube.md)
+
 ## Development
 
-- acceptance tests: `cd tests && ./run.sh`
-- integration tests
-  - `export BOSH_KUBE_CPI_KUBE_CONFIG_PATH=~/.kubectl/config`
-  - `ginkgo -r src/github.com/cppforlife/bosh-kubernetes-cpi/integration/`
 - unit tests
   - `./src/github.com/cppforlife/bosh-kubernetes-cpi/bin/test`
+- integration tests (against Minikube for now)
+  - `export BOSH_KUBE_CPI_KUBE_CONFIG_PATH=~/.kubectl/config`
+  - `ginkgo -r src/github.com/cppforlife/bosh-kubernetes-cpi/integration/`
+- acceptance tests: `cd tests && ./run.sh` (against Minikube)
 
 ## TODO
 
