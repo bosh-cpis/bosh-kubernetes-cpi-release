@@ -26,6 +26,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 ### Must have
 
 - file PR for director dns updates
+  - based on https://github.com/cloudfoundry/bosh/commit/98181d0a418382b8563ee74aced821932924b00a
 - set pod priority
 - determine draining plan of kube nodes
   - set pod disruption budget
