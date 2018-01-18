@@ -1,7 +1,4 @@
-{
-  "kind": "Namespace",
-  "apiVersion": "v1",
-  "metadata": {
-    "name": "bosh"
-  }
-}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bosh
