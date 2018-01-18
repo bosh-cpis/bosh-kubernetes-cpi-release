@@ -69,15 +69,16 @@ docker = params["Docker"]
 if docker.fetch("host") != ""
   if !docker.fetch("host").start_with?("unix://")
     docker["tls"] = {
-      "ca"          => p("docker.tls.ca"),
-      "certificate" => p("docker.tls.certificate"),
-      "private_key" => p("docker.tls.private_key"),
+      "cert" => {
+        "ca"          => p("docker.tls.cert.ca"),
+        "certificate" => p("docker.tls.cert.certificate"),
+        "private_key" => p("docker.tls.cert.private_key"),
+      },
     }
   end
 end
 
 agent_params = params["Agent"]
-
 if_p("blobstore") do
   agent_params["blobstore"] = {
    "provider" => p("blobstore.provider"),

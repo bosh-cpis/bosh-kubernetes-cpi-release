@@ -77,7 +77,7 @@ func (i DockerImageFactory) ImportFromPath(imagePath string, _ Props) (Stemcell,
 		Tag:     id,
 	}
 
-	repo := "bosh.io/stemcells"
+	repo := "bosh.io.invalid/stemcells"
 
 	responseBody, err := i.dkrClient.ImageImport(context.TODO(), src, repo, opts)
 	if err != nil {

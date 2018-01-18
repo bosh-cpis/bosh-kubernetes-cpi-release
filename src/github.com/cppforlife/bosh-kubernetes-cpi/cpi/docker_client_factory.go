@@ -41,7 +41,7 @@ func (DockerClientFactory) httpClient(opts DockerClientOpts) (*http.Client, erro
 		return nil, bosherr.WrapError(err, "Adding system CA certs")
 	}
 
-	if !certPool.AppendCertsFromPEM([]byte(opts.TLS.CA)) {
+	if !certPool.AppendCertsFromPEM([]byte(opts.TLS.Cert.CA)) {
 		return nil, bosherr.WrapError(err, "Appending configured CA certs")
 	}
 
@@ -49,7 +49,7 @@ func (DockerClientFactory) httpClient(opts DockerClientOpts) (*http.Client, erro
 	tlsConfig.InsecureSkipVerify = false
 	tlsConfig.RootCAs = certPool
 
-	tlsCert, err := tls.X509KeyPair([]byte(opts.TLS.Certificate), []byte(opts.TLS.PrivateKey))
+	tlsCert, err := tls.X509KeyPair([]byte(opts.TLS.Cert.Certificate), []byte(opts.TLS.Cert.PrivateKey))
 	if err != nil {
 		return nil, bosherr.WrapError(err, "Loading X509 key pair (make sure the key is not encrypted)")
 	}

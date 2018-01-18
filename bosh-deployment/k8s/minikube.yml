@@ -9,18 +9,18 @@
 - type: replace
   path: /resource_pools/name=vms/cloud_properties/node_ports?
   value:
-    - name: agent
-      protocol: TCP
-      port: 6868
-      node_port: 32000
-    - name: director
-      protocol: TCP
-      port: 25555
-      node_port: 32001
-    - name: nats
-      protocol: TCP
-      port: 4222
-      node_port: 32003
+  - name: agent
+    protocol: TCP
+    port: 6868
+    node_port: 32000
+  - name: director
+    protocol: TCP
+    port: 25555
+    node_port: 32001
+  - name: nats
+    protocol: TCP
+    port: 4222
+    node_port: 32003
 
 - type: replace
   path: /cloud_provider/mbus
@@ -41,3 +41,15 @@
 - type: replace
   path: /variables/name=nats_server_tls/options/alternative_names/-
   value: 172.17.0.4
+
+# Use minikube's docker daemon for storing stemcells
+- type: replace
+  path: /instance_groups/name=bosh/properties/docker?
+  value: &docker
+    host: ((docker_host))
+    tls:
+      cert: ((docker_tls))
+
+- type: replace
+  path: /cloud_provider/properties/docker?
+  value: *docker

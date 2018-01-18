@@ -59,7 +59,7 @@ properties:
   docker.api_version:
     description: "Expected Docker API version"
     default: "1.22"
-  docker.tls:
+  docker.tls.cert:
     type: certificate
     description: |
       Mutual TLS client certificate for connecting to Docker daemon.
