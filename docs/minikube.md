@@ -1,6 +1,6 @@
 ## Stemcell
 
-Could use included Docker daemon (todo).
+CPI is configured to use minikube's Docker daemon with heavy warden stemcells.
 
 ## Director
 

@@ -1,6 +1,0 @@
-name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-version: "3468.15"
-sha1: da39a3ee5e6b4b0d3255bfef95601890afd80709
-operating_system: ubuntu-trusty
-cloud_properties:
-  image: "gcr.io/moonlit-ceiling-407/stemcells@sha256:136613db16f23babfadfc92e42bb08f5fbfc9bba7105c55c479a5be9d9f12de3"

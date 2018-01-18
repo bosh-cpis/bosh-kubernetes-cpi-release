@@ -3,7 +3,6 @@
 set -e # -x
 
 cpi_path=$PWD/cpi
-stemcell_path=~/Downloads/bosh-stemcell-3468.15-warden-boshlite-ubuntu-trusty-go_agent.tgz
 minikube_ip=$(minikube ip)
 
 rm -f creds.yml rc-creds.yml
@@ -13,21 +12,18 @@ bosh create-release --force --dir ./../ --tarball $cpi_path
 
 echo "-----> `date`: Create kube namespace"
 [ "x$(kubectl config current-context)" == "xminikube" ] || exit 1;
-kubectl create -f ns.yml || true
+kubectl create -f ../deployments/generic/ns.yml || true
 
 echo "-----> `date`: Create env"
 bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   -o ../bosh-deployment/k8s/cpi.yml \
   -o ../bosh-deployment/k8s/minikube.yml \
-  -o ../bosh-deployment/k8s/minikube-local-registry.yml \
   -o ~/workspace/bosh-deployment/jumpbox-user.yml \
   -o ../manifests/dev.yml \
-  -o ../manifests/local-stemcell.yml \
   --state=state.json \
   --vars-store=creds.yml \
   --var-file kube_config=<(cat ~/.kube/config) \
   -v kubernetes_cpi_path=$cpi_path \
-  -v kubernetes_stemcell_path=$stemcell_path \
   -v director_name=k8s \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \
@@ -46,22 +42,19 @@ bosh -n update-runtime-config ~/workspace/bosh-deployment/runtime-configs/dns.ym
   --vars-store rc-creds.yml
 
 echo "-----> `date`: Upload stemcell"
-# todo switch to remote image?
-bosh -n upload-stemcell $stemcell_path
+bosh -n upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent?v=3468.17 \
+  --sha1 1dad6d85d6e132810439daba7ca05694cec208ab
 
 echo "-----> `date`: Create env second time to test persistent disk attachment"
 bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   -o ../bosh-deployment/k8s/cpi.yml \
   -o ../bosh-deployment/k8s/minikube.yml \
   -o ~/workspace/bosh-deployment/jumpbox-user.yml \
-  -o ../bosh-deployment/k8s/minikube-local-registry.yml \
   -o ../manifests/dev.yml \
-  -o ../manifests/local-stemcell.yml \
   --state=state.json \
   --vars-store=creds.yml \
   --var-file kube_config=<(cat ~/.kube/config) \
   -v kubernetes_cpi_path=$cpi_path \
-  -v kubernetes_stemcell_path=$stemcell_path \
   -v director_name=k8s \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \
@@ -73,11 +66,6 @@ bosh -n -d zookeeper delete-deployment --force
 
 echo "-----> `date`: Deploy"
 bosh -n -d zookeeper deploy <(wget -O- https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml)
-
-echo "-----> `date`: Recreate all VMs"
-bosh -n -d zookeeper recreate
-
-# todo figure out how to deal with dns
 
 echo "-----> `date`: Exercise deployment"
 bosh -n -d zookeeper run-errand smoke-tests
@@ -105,14 +93,11 @@ bosh delete-env ~/workspace/bosh-deployment/bosh.yml \
   -o ../bosh-deployment/k8s/cpi.yml \
   -o ../bosh-deployment/k8s/minikube.yml \
   -o ~/workspace/bosh-deployment/jumpbox-user.yml \
-  -o ../bosh-deployment/k8s/minikube-local-registry.yml \
   -o ../manifests/dev.yml \
-  -o ../manifests/local-stemcell.yml \
   --state=state.json \
   --vars-store=creds.yml \
   --var-file kube_config=<(cat ~/.kube/config) \
   -v kubernetes_cpi_path=$cpi_path \
-  -v kubernetes_stemcell_path=$stemcell_path \
   -v director_name=k8s \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \

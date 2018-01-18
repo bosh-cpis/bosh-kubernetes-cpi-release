@@ -31,10 +31,14 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 - determine draining plan of kube nodes
   - set pod disruption budget
   - eviction api: https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service
+  - terminationGracePeriodSeconds
+  - blue-green on nodes
 
 ### Nice to have
 
+- precompiled release
 - disk migration (similar to docker cpi)
+  - requires director changes
 - lessen necessary perms on default container (what's agent doing?)
 - works with gcr/ecr/ibm/harbor/on-prem registry
   - add authentication
@@ -46,6 +50,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
   - Warning   ProvisioningFailed  storageclass.storage.k8s.io "standard" not found (sl)
 - automatically pick disk class default from a list?
 - credential discovery for incluster vs outofcluster
+- bind to load balancer via service name?
 
 ### Enchancement
 
