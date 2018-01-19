@@ -58,7 +58,7 @@ az aks -h
 az aks scale -n myK8sCluster -c 3 -g myResourceGroup
 ```
 
-Fix kernel boot config:
+Fix kernel boot config (only for CF):
 
 ```
 eval `ssh-agent`
