@@ -1,0 +1,13 @@
+# todo custom storage class?
+- type: replace
+  path: /disk_pools/name=disks/cloud_properties/storage_class
+  value: default
+
+# Configure VM size
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties/resources
+  value:
+    requests:
+      memory: 2Gi
+    limits:
+      memory: 2Gi

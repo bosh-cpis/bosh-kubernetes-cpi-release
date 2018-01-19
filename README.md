@@ -10,6 +10,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 
 - [GKE](docs/gke.md)
 - [IBM](docs/ibm.md)
+- [AKS (Azure)](docs/aks.md)
 - [Minikube](docs/minikube.md)
 
 ## Development
