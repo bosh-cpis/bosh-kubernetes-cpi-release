@@ -2,11 +2,15 @@
 
 set -e
 
-echo "-----> Check minikube is operational"
-minikube ip
-
+echo "-----> `date`: Check minikube is operational"
+minikube_ip=$(minikube ip)
 eval $(minikube docker-env)
 
+echo "-----> `date`: Create dev release"
+cpi_path=/tmp/kube-cpi
+bosh create-release --force --dir ./../../ --tarball $cpi_path
+
+echo "-----> `date`: Deploying"
 bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   --state=state.json \
   --vars-store=creds.yml \
@@ -18,8 +22,8 @@ bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \
   --var-file kube_config=<(cat ~/.kube/config) \
-  -v kubernetes_cpi_path=/tmp/kube-cpi \
-  -v internal_ip=$(minikube ip) \
+  -v kubernetes_cpi_path=$cpi_path \
+  -v internal_ip=$minikube_ip \
   -v docker_host=$DOCKER_HOST \
   --var-file docker_tls.ca=$DOCKER_CERT_PATH/ca.pem \
   --var-file docker_tls.certificate=$DOCKER_CERT_PATH/cert.pem \

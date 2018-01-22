@@ -13,14 +13,16 @@ import (
 	kretry "k8s.io/client-go/util/retry"
 
 	bkube "github.com/cppforlife/bosh-kubernetes-cpi/kube"
+	bvmnet "github.com/cppforlife/bosh-kubernetes-cpi/vm/network"
 )
 
 type VMImpl struct {
-	cid              apiv1.VMCID
+	cid        apiv1.VMCID
+	networking bvmnet.Networking
+
 	podsClient       kcorev1.PodInterface
 	configMapsClient kcorev1.ConfigMapInterface
 	pvcsClient       kcorev1.PersistentVolumeClaimInterface
-	servicesClient   kcorev1.ServiceInterface
 
 	timeService  clock.Clock
 	readyTimeout time.Duration
@@ -31,14 +33,15 @@ type VMImpl struct {
 
 func NewVMImpl(
 	cid apiv1.VMCID,
+	networking bvmnet.Networking,
 	podsClient kcorev1.PodInterface,
 	configMapsClient kcorev1.ConfigMapInterface,
 	pvcsClient kcorev1.PersistentVolumeClaimInterface,
-	servicesClient kcorev1.ServiceInterface,
 	timeService clock.Clock,
 	logger boshlog.Logger,
 ) VMImpl {
-	return VMImpl{cid, podsClient, configMapsClient, pvcsClient, servicesClient,
+	return VMImpl{cid, networking,
+		podsClient, configMapsClient, pvcsClient,
 		timeService, 5 * time.Minute, "vm.VMImpl", logger}
 }
 
@@ -100,9 +103,9 @@ func (vm VMImpl) Delete() error {
 		}
 	}
 
-	err = vm.deleteAssociatedServices()
+	err = vm.networking.Delete()
 	if err != nil {
-		return err
+		return bosherr.WrapError(err, "Deleting networking")
 	}
 
 	return nil
@@ -113,24 +116,6 @@ func (vm VMImpl) deletePod() error {
 	if err != nil {
 		if !kerrors.IsNotFound(err) {
 			return bosherr.WrapError(err, "Deleting pod")
-		}
-	}
-
-	return nil
-}
-
-func (vm VMImpl) deleteAssociatedServices() error {
-	svcs, err := vm.servicesClient.List(bkube.NewVMLabel(vm.cid).AsListOpts())
-	if err != nil {
-		return bosherr.WrapError(err, "Listing associated services")
-	}
-
-	for _, svc := range svcs.Items {
-		err := vm.servicesClient.Delete(svc.Name, kmetav1.NewDeleteOptions(0))
-		if err != nil {
-			if !kerrors.IsNotFound(err) {
-				return bosherr.WrapErrorf(err, "Deleting associated service '%s'", svc.Name)
-			}
 		}
 	}
 

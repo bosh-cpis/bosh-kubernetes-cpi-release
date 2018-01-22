@@ -3,12 +3,15 @@
 set -e # -x
 
 cpi_path=$PWD/cpi
-minikube_ip=$(minikube ip)
 
 rm -f creds.yml rc-creds.yml
 
 echo "-----> `date`: Create dev release"
 bosh create-release --force --dir ./../ --tarball $cpi_path
+
+echo "-----> Check minikube is operational"
+minikube_ip=$(minikube ip)
+eval $(minikube docker-env)
 
 echo "-----> `date`: Create kube namespace"
 [ "x$(kubectl config current-context)" == "xminikube" ] || exit 1;
@@ -27,7 +30,12 @@ bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   -v director_name=k8s \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \
-  -v internal_ip=$minikube_ip
+  -v internal_ip=$minikube_ip \
+  -v docker_host=$DOCKER_HOST \
+  --var-file docker_tls.ca=$DOCKER_CERT_PATH/ca.pem \
+  --var-file docker_tls.certificate=$DOCKER_CERT_PATH/cert.pem \
+  --var-file docker_tls.private_key=$DOCKER_CERT_PATH/key.pem \
+  -o ../deployments/generic/local.yml
 
 export BOSH_ENVIRONMENT=https://$minikube_ip:32001 # todo director port
 export BOSH_CA_CERT="$(bosh int creds.yml --path /director_ssl/ca)"
@@ -59,12 +67,18 @@ bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \
   -v internal_ip=$minikube_ip \
+  -v docker_host=$DOCKER_HOST \
+  --var-file docker_tls.ca=$DOCKER_CERT_PATH/ca.pem \
+  --var-file docker_tls.certificate=$DOCKER_CERT_PATH/cert.pem \
+  --var-file docker_tls.private_key=$DOCKER_CERT_PATH/key.pem \
+  -o ../deployments/generic/local.yml \
   --recreate
 
 echo "-----> `date`: Delete previous deployment"
 bosh -n -d zookeeper delete-deployment --force
 
 echo "-----> `date`: Deploy"
+# since default network is dynamic, dns addresses will be used
 bosh -n -d zookeeper deploy <(wget -O- https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml)
 
 echo "-----> `date`: Exercise deployment"
@@ -101,6 +115,10 @@ bosh delete-env ~/workspace/bosh-deployment/bosh.yml \
   -v director_name=k8s \
   -v internal_cidr="unused" \
   -v internal_gw="unused" \
-  -v internal_ip=$minikube_ip
+  -v internal_ip=$minikube_ip \
+  -v docker_host=$DOCKER_HOST \
+  --var-file docker_tls.ca=$DOCKER_CERT_PATH/ca.pem \
+  --var-file docker_tls.certificate=$DOCKER_CERT_PATH/cert.pem \
+  --var-file docker_tls.private_key=$DOCKER_CERT_PATH/key.pem
 
 echo "-----> `date`: Done"

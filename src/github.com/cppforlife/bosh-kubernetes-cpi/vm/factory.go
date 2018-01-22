@@ -9,7 +9,7 @@ import (
 
 	bkube "github.com/cppforlife/bosh-kubernetes-cpi/kube"
 	bstem "github.com/cppforlife/bosh-kubernetes-cpi/stemcell"
-	bvmsrv "github.com/cppforlife/bosh-kubernetes-cpi/vm/services"
+	bvmnet "github.com/cppforlife/bosh-kubernetes-cpi/vm/network"
 )
 
 type FactoryOpts struct {
@@ -69,11 +69,6 @@ func (f Factory) Create(
 
 	vm := f.newVM(apiv1.NewVMCID("vm-" + id))
 
-	err = bvmsrv.NewServices(vm.ID(), env.Group(), props.NodePorts, props.ClusterIPs, f.client.Services()).Create()
-	if err != nil {
-		return nil, bosherr.WrapError(err, "Creating services")
-	}
-
 	// todo create the target namespace if it doesn't already exist
 
 	if len(networks) == 0 {
@@ -96,12 +91,16 @@ func (f Factory) Create(
 	}
 
 	startOpts := StartOpts{
-		Props:               props,
-		Env:                 env,
+		Stemcell: stemcell,
+		Networks: networks,
+
+		Props: props,
+		Env:   env,
+
 		ImagePullSecretName: f.opts.ImagePullSecretName,
 	}
 
-	err = vm.Start(stemcell, startOpts)
+	err = vm.Start(startOpts)
 	if err != nil {
 		f.cleanUpPartialCreate(vm)
 		return nil, bosherr.WrapError(err, "Starting VM")
@@ -115,8 +114,10 @@ func (f Factory) Find(cid apiv1.VMCID) (VM, error) {
 }
 
 func (f Factory) newVM(cid apiv1.VMCID) VMImpl {
-	return NewVMImpl(cid, f.client.Pods(), f.client.ConfigMaps(),
-		f.client.PVCs(), f.client.Services(), f.timeService, f.logger)
+	networking := bvmnet.NewNetworking(cid, f.client.Services(), f.logger)
+
+	return NewVMImpl(cid, networking, f.client.Pods(), f.client.ConfigMaps(),
+		f.client.PVCs(), f.timeService, f.logger)
 }
 
 func (f Factory) cleanUpPartialCreate(vm VM) {

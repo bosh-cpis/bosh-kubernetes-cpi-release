@@ -8,6 +8,12 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
+const (
+  NetworkTypeDynamic = "dynamic"
+  NetworkTypeManual = "manual"
+  NetworkTypeVIP = "vip"
+)
+
 type Networks map[string]Network
 
 type Network interface {

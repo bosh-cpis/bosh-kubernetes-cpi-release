@@ -2,10 +2,6 @@
 
 The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF onto Kubernetes clusters.
 
-... example: minikube ...
-
-... example: gke ...
-
 ## Use with Kube environments
 
 - [GKE](docs/gke.md)
@@ -18,7 +14,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 - unit tests
   - `./src/github.com/cppforlife/bosh-kubernetes-cpi/bin/test`
 - integration tests (against Minikube for now)
-  - `export BOSH_KUBE_CPI_KUBE_CONFIG_PATH=~/.kubectl/config`
+  - `export BOSH_KUBE_CPI_KUBE_CONFIG_PATH=~/.kube/config`
   - `ginkgo -r src/github.com/cppforlife/bosh-kubernetes-cpi/integration/`
 - acceptance tests: `cd tests && ./run.sh` (against Minikube)
 
@@ -33,7 +29,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
   - set pod disruption budget
   - eviction api: https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service
   - terminationGracePeriodSeconds
-  - blue-green on nodes
+  - blue-green on nodes/cluster
 
 ### Nice to have
 
@@ -48,25 +44,21 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 - better error detection on vm creation before existing
   - non-pullable image?
 - better error detection on disk creation
-  - Warning   ProvisioningFailed  storageclass.storage.k8s.io "standard" not found (sl)
+  - `Warning   ProvisioningFailed  storageclass.storage.k8s.io "standard" not found (sl)`
 - automatically pick disk class default from a list?
-- credential discovery for incluster vs outofcluster
-- bind to load balancer via service name?
+- automatically create registry secret with readonly pulling?
+- automatically create namespace?
 
-### Enchancement
+### Enhancement
 
-- setting AZs
-  - through labels?
-- automatically create anti affinity rules
-- automatically create services?
-- automatically create load balancer?
-  - or update ports?
-- manual networking via selected clusterIP services
 - use daemon set to warm up stemcell loading?
   - when do we kick it off?
 - do we need unique guid in front of heavy cid?
 - bring back dead container if disk attach fails?
 - minikube route to director?
+- checked labels?
+- update service's selector?
+- credential discovery for incluster vs outofcluster
 
 # bosh-cpi-go
 

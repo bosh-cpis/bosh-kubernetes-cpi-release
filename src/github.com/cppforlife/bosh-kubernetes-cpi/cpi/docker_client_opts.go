@@ -13,14 +13,14 @@ type DockerClientOpts struct {
 }
 
 type DockerClientOptsTLS struct {
-  // Assume always enabled
-  Cert DockerClientOptsTLSCert
+	// Assume always enabled
+	Cert DockerClientOptsTLSCert
 }
 
 type DockerClientOptsTLSCert struct {
-  CA          string
-  Certificate string
-  PrivateKey  string `json:"private_key"`
+	CA          string
+	Certificate string
+	PrivateKey  string `json:"private_key"`
 }
 
 func (o DockerClientOpts) IsPresent() bool {

@@ -26,10 +26,7 @@ var _ = Describe("VMs", func() {
 					map[string]interface{}{"instance_type": "m1.small"},
 					map[string]interface{}{
 						"private": map[string]interface{}{
-							"type":             "manual",
-							"netmask":          "255.255.255.0",
-							"gateway":          "10.230.13.1",
-							"ip":               "10.230.13.6",
+							"type":             "dynamic",
 							"dns":              []string{"8.8.8.8"},
 							"default":          []string{"dns", "gateway"},
 							"cloud_properties": nil,
@@ -79,10 +76,13 @@ var _ = Describe("VMs", func() {
 							"command":         []string{"/bin/bash"},
 							"args": []string{
 								"-c",
-								"umount /etc/resolv.conf && \\\numount /etc/hosts && \\\n" +
-									"umount /etc/hostname && \\\nrm -rf /var/vcap/data/sys && \\\n" +
-									"mkdir -p /var/vcap/data/sys && \\\nmkdir -p /var/vcap/store && \\\n" +
-									"echo '#!/bin/bash' > /var/vcap/bosh/bin/ntpdate && \\\n" +
+								"umount /etc/resolv.conf && " +
+									"umount /etc/hosts && " +
+									"umount /etc/hostname &&  :  && " +
+									"rm -rf /var/vcap/data/sys && " +
+									"mkdir -p /var/vcap/data/sys && " +
+									"mkdir -p /var/vcap/store && " +
+									"echo '#!/bin/bash' > /var/vcap/bosh/bin/ntpdate && " +
 									"exec env -i /usr/sbin/runsvdir-start",
 							},
 							"resources": map[string]interface{}{},
@@ -166,14 +166,14 @@ var _ = Describe("VMs", func() {
 
 					"networks": map[string]interface{}{
 						"private": map[string]interface{}{
+							"gateway":       "",
+							"ip":            "",
+							"mac":           "",
+							"netmask":       "",
+							"preconfigured": true, // all networks are preconfigured
+							"type":          "dynamic",
 							"default":       []string{"dns", "gateway"},
 							"dns":           []string{"8.8.8.8"},
-							"gateway":       "10.230.13.1",
-							"ip":            "10.230.13.6",
-							"mac":           "",
-							"netmask":       "255.255.255.0",
-							"preconfigured": true, // all networks are preconfigured
-							"type":          "manual",
 						},
 					},
 				})
@@ -229,10 +229,7 @@ var _ = Describe("VMs", func() {
 					},
 					map[string]interface{}{
 						"private": map[string]interface{}{
-							"type":             "manual",
-							"netmask":          "255.255.255.0",
-							"gateway":          "10.230.13.1",
-							"ip":               "10.230.13.6",
+							"type":             "dynamic",
 							"dns":              []string{"8.8.8.8"},
 							"default":          []string{"dns", "gateway"},
 							"cloud_properties": nil,

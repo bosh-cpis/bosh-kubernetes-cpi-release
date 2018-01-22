@@ -1,6 +1,8 @@
 package vm
 
 import (
+	"strings"
+
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	apiv1 "github.com/cppforlife/bosh-cpi-go/apiv1"
 	kapiv1 "k8s.io/api/core/v1"
@@ -8,6 +10,7 @@ import (
 
 	bkube "github.com/cppforlife/bosh-kubernetes-cpi/kube"
 	bstem "github.com/cppforlife/bosh-kubernetes-cpi/stemcell"
+	bvmnet "github.com/cppforlife/bosh-kubernetes-cpi/vm/network"
 )
 
 const (
@@ -16,16 +19,24 @@ const (
 )
 
 type StartOpts struct {
+	Stemcell bstem.Stemcell
+	Networks apiv1.Networks
+
 	Props Props
 	Env   apiv1.VMEnv
 
 	ImagePullSecretName string
 }
 
-func (vm VMImpl) Start(stemcell bstem.Stemcell, opts StartOpts) error {
+func (vm VMImpl) Start(opts StartOpts) error {
 	trueBool := true
 	falseBool := true
 	zeroInt64 := int64(0)
+
+	networkInitBashCmd, err := vm.networking.Create(opts.Networks, bvmnet.Props(opts.Props.Network))
+	if err != nil {
+		return bosherr.WrapErrorf(err, "Creating networking")
+	}
 
 	pod := &kapiv1.Pod{
 		ObjectMeta: kmetav1.ObjectMeta{
@@ -45,7 +56,7 @@ func (vm VMImpl) Start(stemcell bstem.Stemcell, opts StartOpts) error {
 			Containers: []kapiv1.Container{{
 				Name: vmContainerName,
 
-				Image:           stemcell.Image(),
+				Image:           opts.Stemcell.Image(),
 				ImagePullPolicy: kapiv1.PullIfNotPresent, // supports imported local docker image
 
 				Resources: opts.Props.ResourceRequirements,
@@ -55,14 +66,21 @@ func (vm VMImpl) Start(stemcell bstem.Stemcell, opts StartOpts) error {
 				},
 
 				Command: []string{"/bin/bash"},
-				Args: []string{"-c", `umount /etc/resolv.conf && \
-umount /etc/hosts && \
-umount /etc/hostname && \
-rm -rf /var/vcap/data/sys && \
-mkdir -p /var/vcap/data/sys && \
-mkdir -p /var/vcap/store && \
-echo '#!/bin/bash' > /var/vcap/bosh/bin/ntpdate && \
-exec env -i /usr/sbin/runsvdir-start`},
+				Args: []string{"-c", strings.Join([]string{
+					// Remove default Docker/kube integration
+					`umount /etc/resolv.conf`,
+					`umount /etc/hosts`,
+					`umount /etc/hostname`,
+					networkInitBashCmd,
+					// todo move initialization to agent
+					`rm -rf /var/vcap/data/sys`,
+					`mkdir -p /var/vcap/data/sys`,
+					`mkdir -p /var/vcap/store`,
+					// todo expose as agent api for disable time mgmt
+					`echo '#!/bin/bash' > /var/vcap/bosh/bin/ntpdate`,
+					// start the agent
+					`exec env -i /usr/sbin/runsvdir-start`,
+				}, " && ")},
 
 				VolumeMounts: []kapiv1.VolumeMount{
 					{
@@ -108,10 +126,10 @@ exec env -i /usr/sbin/runsvdir-start`},
 		}
 	}
 
-	vm.placePodIntoRegionAndZone(pod, opts.Props)
-	vm.spreadOutPodsAcrossNodes(pod, opts.Env)
+	Affinity{}.PlacePodIntoRegionAndZone(pod, opts.Props)
+	Affinity{}.SpreadOutPodsAcrossNodes(pod, opts.Env)
 
-	_, err := vm.podsClient.Create(pod)
+	_, err = vm.podsClient.Create(pod)
 	if err != nil {
 		return bosherr.WrapError(err, "Creating pod")
 	}
@@ -134,64 +152,4 @@ func (vm VMImpl) buildLabels(props Props, env apiv1.VMEnv) map[string]string {
 	}
 
 	return labels
-}
-
-func (vm VMImpl) placePodIntoRegionAndZone(pod *kapiv1.Pod, props Props) {
-	if len(props.Region) > 0 || len(props.Zone) > 0 {
-		reqs := []kapiv1.NodeSelectorRequirement{}
-
-		if len(props.Region) > 0 {
-			reqs = append(reqs, kapiv1.NodeSelectorRequirement{
-				Key:      "failure-domain.beta.kubernetes.io/region",
-				Operator: kapiv1.NodeSelectorOpIn,
-				Values:   []string{props.Region},
-			})
-		}
-
-		if len(props.Zone) > 0 {
-			reqs = append(reqs, kapiv1.NodeSelectorRequirement{
-				Key:      "failure-domain.beta.kubernetes.io/zone",
-				Operator: kapiv1.NodeSelectorOpIn,
-				Values:   []string{props.Zone},
-			})
-		}
-
-		if pod.Spec.Affinity == nil {
-			pod.Spec.Affinity = &kapiv1.Affinity{}
-		}
-
-		pod.Spec.Affinity.NodeAffinity = &kapiv1.NodeAffinity{
-			RequiredDuringSchedulingIgnoredDuringExecution: &kapiv1.NodeSelector{
-				NodeSelectorTerms: []kapiv1.NodeSelectorTerm{{
-					MatchExpressions: reqs,
-				}},
-			},
-		}
-	}
-}
-
-func (vm VMImpl) spreadOutPodsAcrossNodes(pod *kapiv1.Pod, env apiv1.VMEnv) {
-	if group := env.Group(); group != nil {
-		groupLabel := bkube.NewVMEnvGroupLabel(*group)
-
-		if pod.Spec.Affinity == nil {
-			pod.Spec.Affinity = &kapiv1.Affinity{}
-		}
-
-		pod.Spec.Affinity.PodAntiAffinity = &kapiv1.PodAntiAffinity{
-			PreferredDuringSchedulingIgnoredDuringExecution: []kapiv1.WeightedPodAffinityTerm{{
-				Weight: 100,
-				PodAffinityTerm: kapiv1.PodAffinityTerm{
-					LabelSelector: &kmetav1.LabelSelector{
-						MatchExpressions: []kmetav1.LabelSelectorRequirement{{
-							Key:      groupLabel.Name(),
-							Operator: kmetav1.LabelSelectorOpIn,
-							Values:   []string{groupLabel.Value()},
-						}},
-					},
-					TopologyKey: "kubernetes.io/hostname",
-				},
-			}},
-		}
-	}
 }
