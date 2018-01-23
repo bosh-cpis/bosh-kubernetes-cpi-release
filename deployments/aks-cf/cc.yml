@@ -14,19 +14,19 @@ disk_types:
 - disk_size: 1024
   name: 1GB
   cloud_properties:
-    storage_class: standard
+    storage_class: default
 - disk_size: 5120
   name: 5GB
   cloud_properties:
-    storage_class: standard
+    storage_class: default
 - disk_size: 10240
   name: 10GB
   cloud_properties:
-    storage_class: standard
+    storage_class: default
 - disk_size: 100240
   name: 100GB
   cloud_properties:
-    storage_class: standard
+    storage_class: default
 
 networks:
 - name: default
