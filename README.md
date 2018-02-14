@@ -29,7 +29,6 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
   - set pod disruption budget
   - eviction api: https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service
   - terminationGracePeriodSeconds
-  - blue-green on nodes/cluster
 
 ### Nice to have
 
