@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod1
+  labels:
+    pod: foo
+spec:
+  containers:
+  - image: gcr.io/moonlit-ceiling-407/bosh-io-stemcells@sha256:9f4b78de6f2b31412565647879b2b8c1a7c11d157eb4426b085150e910831ce3
+    command: ["/bin/bash"]
+    args: ["-c", "sleep 1000000"]
+    name: test-container
