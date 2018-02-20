@@ -6,6 +6,16 @@
   path: /instance_groups/name=bosh/properties/service_account/override_api_port?
   value: 8443
 
+# PDB controller
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=kubernetes_cpi_pdbctrl/properties/kube?/service_account/override_api_host
+  value: ((internal_ip))
+
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=kubernetes_cpi_pdbctrl/properties/kube?/service_account/override_api_port
+  value: 8443
+
+# Expose director to outside
 - type: replace
   path: /resource_pools/name=vms/cloud_properties/node_ports?
   value:

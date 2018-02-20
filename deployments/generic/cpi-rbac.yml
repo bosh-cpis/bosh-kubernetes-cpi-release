@@ -5,8 +5,8 @@ metadata:
   name: bosh-cpi-manager
   namespace: bosh
 rules:
-- apiGroups: ["", "extensions"]
-  resources: ["pods", "configmaps", "services", "persistentvolumeclaims"]
+- apiGroups: ["", "policy", "extensions"]
+  resources: ["pods", "configmaps", "services", "persistentvolumeclaims", "poddisruptionbudgets"]
   verbs: ["*"]
 ---
 kind: RoleBinding

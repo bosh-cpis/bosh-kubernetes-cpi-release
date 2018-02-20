@@ -2,9 +2,14 @@
   path: /resource_pools/name=vms/cloud_properties/labels?/director
   value: foo
 
-# Assume that internal_ip also hosts kubernetes api on 443
+# Assume (todo?) that internal_ip also hosts kubernetes api on 443
 - type: replace
   path: /instance_groups/name=bosh/properties/service_account/override_api_host?
+  value: ((kube_api))
+
+# PDB controller
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=kubernetes_cpi_pdbctrl/properties/kube?/service_account/override_api_host
   value: ((kube_api))
 
 # Registry

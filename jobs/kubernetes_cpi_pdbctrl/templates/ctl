@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -e
+
+export LOG_DIR=/var/vcap/sys/log/kubernetes_cpi_pdbctrl
+export RUN_DIR=/var/vcap/sys/run/kubernetes_cpi_pdbctrl
+export PIDFILE=/var/vcap/sys/run/kubernetes_cpi_pdbctrl/pid
+
+case $1 in
+
+  start)
+    mkdir -p $LOG_DIR $RUN_DIR
+    chown -R vcap:vcap $LOG_DIR $RUN_DIR
+
+    echo $$ > $PIDFILE
+
+    exec chpst -u vcap:vcap \
+      /var/vcap/packages/kubernetes_cpi/bin/pdbctrl \
+      /var/vcap/jobs/kubernetes_cpi_pdbctrl/config/config.json \
+      >>$LOG_DIR/stdout.log \
+      2>>$LOG_DIR/stderr.log
+    ;;
+
+  stop)
+    if [ -f $PIDFILE ]; then
+      kill -9 `cat $PIDFILE` || true
+      rm -f $PIDFILE
+    fi
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+
+esac
+exit 0

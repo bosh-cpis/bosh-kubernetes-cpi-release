@@ -3,6 +3,7 @@ package kube
 import (
 	"k8s.io/client-go/kubernetes"
 	kcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	kv1beta1 "k8s.io/client-go/kubernetes/typed/policy/v1beta1"
 )
 
 type Client struct {
@@ -28,4 +29,8 @@ func (c Client) ConfigMaps() kcorev1.ConfigMapInterface {
 
 func (c Client) Services() kcorev1.ServiceInterface {
 	return c.clientset.CoreV1().Services(c.namespace)
+}
+
+func (c Client) PDBs() kv1beta1.PodDisruptionBudgetInterface {
+	return c.clientset.PolicyV1beta1().PodDisruptionBudgets(c.namespace)
 }

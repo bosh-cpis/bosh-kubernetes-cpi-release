@@ -5,4 +5,5 @@ set -e
 bin=$(dirname $0)
 
 go build -o $bin/cpi     github.com/cppforlife/bosh-kubernetes-cpi/main
+go build -o $bin/pdbctrl github.com/cppforlife/bosh-kubernetes-cpi/pdbctrl
 go build -o $bin/regmain github.com/cppforlife/bosh-kubernetes-cpi/stemcell/registrymain

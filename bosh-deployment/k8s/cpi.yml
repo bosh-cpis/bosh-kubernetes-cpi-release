@@ -60,3 +60,18 @@
 - type: replace
   path: /cloud_provider/properties/config?
   value: ((kube_config))
+
+# Add PDB controller job
+- type: replace
+  path: /instance_groups/name=bosh/jobs/-
+  value:
+    name: kubernetes_cpi_pdbctrl
+    release: bosh-kubernetes-cpi
+    properties:
+      director:
+        host: ((internal_ip))
+        tls:
+          cert:
+            ca: ((director_ssl.ca))
+        client: hm # todo use hm?
+        client_secret: ((hm_password))

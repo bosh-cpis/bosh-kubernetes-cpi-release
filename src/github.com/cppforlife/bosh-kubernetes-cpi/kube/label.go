@@ -34,6 +34,10 @@ type Label struct {
 	value string
 }
 
+func NewLabel(name LabelName, value string) Label {
+	return Label{name, value}
+}
+
 func NewDiskLabel(cid apiv1.DiskCID) Label {
 	return Label{NewDiskLabelName(), cid.AsString()}
 }

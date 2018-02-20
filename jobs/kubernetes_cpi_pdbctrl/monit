@@ -1,0 +1,5 @@
+check process kubernetes_cpi_pdbctrl
+  with pidfile /var/vcap/sys/run/kubernetes_cpi_pdbctrl/pid
+  start program "/var/vcap/jobs/kubernetes_cpi_pdbctrl/bin/ctl start"
+  stop program "/var/vcap/jobs/kubernetes_cpi_pdbctrl/bin/ctl stop"
+  group vcap

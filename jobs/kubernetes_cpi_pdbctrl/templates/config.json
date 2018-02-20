@@ -1,0 +1,23 @@
+<%= 
+
+JSON.dump(
+  "SyncInterval" => p("sync_interval"),
+
+  "Kube" => {
+    "Namespace"       => p("kube.namespace"),
+    "OverrideAPIHost" => p("kube.service_account.override_api_host"),
+    "OverrideAPIPort" => p("kube.service_account.override_api_port"),
+  },
+
+  "Director" => {
+    "Host" => p("director.host"),
+    "Port" => p("director.port"),
+    "TLS" => {
+      "Cert" => p("director.tls.cert"),
+    },
+    "Client" => p("director.client"),
+    "ClientSecret" => p("director.client_secret"),
+  },
+)
+
+%>

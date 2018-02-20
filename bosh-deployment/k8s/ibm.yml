@@ -11,6 +11,15 @@
   path: /instance_groups/name=bosh/properties/service_account/override_api_port?
   value: ((kube_port))
 
+# PDB controller
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=kubernetes_cpi_pdbctrl/properties/kube?/service_account/override_api_host
+  value: ((kube_api))
+
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=kubernetes_cpi_pdbctrl/properties/kube?/service_account/override_api_port
+  value: ((kube_port))
+
 # Registry
 - type: replace
   path: /instance_groups/name=bosh/properties/registry?/backend

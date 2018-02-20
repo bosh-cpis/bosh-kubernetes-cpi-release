@@ -17,6 +17,8 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
   - `export BOSH_KUBE_CPI_KUBE_CONFIG_PATH=~/.kube/config`
   - `ginkgo -r src/github.com/cppforlife/bosh-kubernetes-cpi/integration/`
 - acceptance tests: `cd tests && ./run.sh` (against Minikube)
+- `src/src2` is docker registry libraries
+- `src/src3` is copy of bosh-cron-release/src
 
 ## TODO
 
@@ -24,10 +26,21 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 
 - file PR for director dns updates
   - based on https://github.com/cloudfoundry/bosh/commit/98181d0a418382b8563ee74aced821932924b00a
-- determine draining plan of kube nodes
-  - set pod disruption budget
-  - eviction api: https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service
+- [in progress] determine draining plan of kube nodes
   - terminationGracePeriodSeconds
+  - PDBs
+    - fix StateApplier in cloudcheck_helper.rb
+    - what determines container readiness/liveliness?
+      - cat we use health.json?
+    - how to optimize HM resurrection?
+    - allow custom budgets (cross ig budget?)
+    - which iaases use which drain command
+      - drain timeout period?
+    - associate controller owner with pods
+    - director resurrection?
+    - integration tests
+    - how does hotswap affect budget?
+    - how to remove unnecessary pdbs?
 
 ### Nice to have
 
@@ -48,6 +61,8 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 - automatically create registry secret with readonly pulling?
   - kube should only have read only access since it's not doing any pushing
 - automatically create namespace?
+- tag all resources with director/bosh label?
+- [director] parallel disk creation
 
 ### Enhancement
 
@@ -65,6 +80,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
   - instead of labels, potentially ask for a service name and update its selector
   - effectively auto labeling
 - credential discovery for incluster vs outofcluster
+- bpmize pdbctrl (no acess to /var/run/...)
 
 ## Later
 
@@ -81,3 +97,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 - vmenvgroup
 - add set_disk_metadata
 - add integration/testlib
+
+# director go client
+
+- delayed factory
