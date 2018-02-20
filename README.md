@@ -20,11 +20,10 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 
 ## TODO
 
-### Must have
+### Must have for production
 
 - file PR for director dns updates
   - based on https://github.com/cloudfoundry/bosh/commit/98181d0a418382b8563ee74aced821932924b00a
-- set pod priority
 - determine draining plan of kube nodes
   - set pod disruption budget
   - eviction api: https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#use-kubectl-drain-to-remove-a-node-from-service
@@ -32,32 +31,48 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
 
 ### Nice to have
 
-- precompiled release
-- disk migration (similar to docker cpi)
-  - requires director changes
-- lessen necessary perms on default container (what's agent doing?)
-- works with gcr/ecr/ibm/harbor/on-prem registry
-  - add authentication
-- disable ntpdate updates
+- set pod priority
+  - could be exposed via a cloud_property setting (via vm_extension)
+- [dk] precompiled release
+- non-root permissions on bosh container (what's agent doing?)
+- use ibm registry
+- use harbor registry
+- use gcr registry in read-only for pulling
 - gcr acceptance tests
 - better error detection on vm creation before existing
   - non-pullable image?
 - better error detection on disk creation
   - `Warning   ProvisioningFailed  storageclass.storage.k8s.io "standard" not found (sl)`
 - automatically pick disk class default from a list?
+  - configure as a global default cpi configuration
 - automatically create registry secret with readonly pulling?
+  - kube should only have read only access since it's not doing any pushing
 - automatically create namespace?
 
 ### Enhancement
 
 - use daemon set to warm up stemcell loading?
-  - when do we kick it off?
-- do we need unique guid in front of heavy cid?
+  - during create_stemcell CPI call
+  - delete during delete_stemcell CPI call
+- do we need unique guid in front of heavy stemcell cid?
 - bring back dead container if disk attach fails?
 - minikube route to director?
 - checked labels?
+  - if cloud properties point to particular label, expect that somethign is bound to that label
+  - fail if label does not point to anything?
+  - which reosurces to look at (eg load balaancer vs ...)?
 - update service's selector?
+  - instead of labels, potentially ask for a service name and update its selector
+  - effectively auto labeling
 - credential discovery for incluster vs outofcluster
+
+## Later
+
+- disk migration (similar to docker cpi)
+  - requires director changes
+  - supporting attacgment of multiple disks to one vm
+- disable ntpdate updates
+  - currentl a hack in the cpi; ideally part of stemcell
 
 # bosh-cpi-go
 
