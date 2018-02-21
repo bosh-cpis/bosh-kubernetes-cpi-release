@@ -35,7 +35,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
     - how to optimize HM resurrection?
     - allow custom budgets (cross ig budget?)
     - which iaases use which drain command
-      - drain timeout period?
+      - drain timeout period? (eg `kubectl drain xxx --force --ignore-daemonsets --delete-local-data`)
     - associate controller owner with pods
     - director resurrection?
     - integration tests
