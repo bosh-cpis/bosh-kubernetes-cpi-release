@@ -126,7 +126,7 @@ func (vm VMImpl) Start(opts StartOpts) error {
 		}
 	}
 
-	Affinity{}.PlacePodIntoRegionAndZone(pod, opts.Props)
+	Affinity{}.PlacePodOnNodes(pod, opts.Props)
 	Affinity{}.SpreadOutPodsAcrossNodes(pod, opts.Env)
 
 	_, err = vm.podsClient.Create(pod)

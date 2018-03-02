@@ -10,26 +10,12 @@ import (
 
 type Affinity struct{}
 
-func (Affinity) PlacePodIntoRegionAndZone(pod *kapiv1.Pod, props Props) {
-	if len(props.Region) > 0 || len(props.Zone) > 0 {
-		reqs := []kapiv1.NodeSelectorRequirement{}
+func (a Affinity) PlacePodOnNodes(pod *kapiv1.Pod, props Props) {
+	reqs := []kapiv1.NodeSelectorRequirement{}
+	reqs = append(reqs, a.placePodIntoRegionAndZone(pod, props)...)
+	reqs = append(reqs, a.placePodOnSpecificNodes(pod, props)...)
 
-		if len(props.Region) > 0 {
-			reqs = append(reqs, kapiv1.NodeSelectorRequirement{
-				Key:      "failure-domain.beta.kubernetes.io/region",
-				Operator: kapiv1.NodeSelectorOpIn,
-				Values:   []string{props.Region},
-			})
-		}
-
-		if len(props.Zone) > 0 {
-			reqs = append(reqs, kapiv1.NodeSelectorRequirement{
-				Key:      "failure-domain.beta.kubernetes.io/zone",
-				Operator: kapiv1.NodeSelectorOpIn,
-				Values:   []string{props.Zone},
-			})
-		}
-
+	if len(reqs) > 0 {
 		if pod.Spec.Affinity == nil {
 			pod.Spec.Affinity = &kapiv1.Affinity{}
 		}
@@ -42,6 +28,42 @@ func (Affinity) PlacePodIntoRegionAndZone(pod *kapiv1.Pod, props Props) {
 			},
 		}
 	}
+}
+
+func (Affinity) placePodIntoRegionAndZone(pod *kapiv1.Pod, props Props) []kapiv1.NodeSelectorRequirement {
+	reqs := []kapiv1.NodeSelectorRequirement{}
+
+	if len(props.Region) > 0 {
+		reqs = append(reqs, kapiv1.NodeSelectorRequirement{
+			Key:      "failure-domain.beta.kubernetes.io/region",
+			Operator: kapiv1.NodeSelectorOpIn,
+			Values:   []string{props.Region},
+		})
+	}
+
+	if len(props.Zone) > 0 {
+		reqs = append(reqs, kapiv1.NodeSelectorRequirement{
+			Key:      "failure-domain.beta.kubernetes.io/zone",
+			Operator: kapiv1.NodeSelectorOpIn,
+			Values:   []string{props.Zone},
+		})
+	}
+
+	return reqs
+}
+
+func (Affinity) placePodOnSpecificNodes(pod *kapiv1.Pod, props Props) []kapiv1.NodeSelectorRequirement {
+	reqs := []kapiv1.NodeSelectorRequirement{}
+
+	for k, v := range props.NodeLabels {
+		reqs = append(reqs, kapiv1.NodeSelectorRequirement{
+			Key:      k,
+			Operator: kapiv1.NodeSelectorOpIn,
+			Values:   []string{v},
+		})
+	}
+
+	return reqs
 }
 
 func (Affinity) SpreadOutPodsAcrossNodes(pod *kapiv1.Pod, env apiv1.VMEnv) {
