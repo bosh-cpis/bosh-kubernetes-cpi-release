@@ -17,3 +17,7 @@ func NewInstanceGroupFactory(client bkube.Client) InstanceGroupFactory {
 func (f InstanceGroupFactory) New(name string, instances []boshdir.Instance) InstanceGroup {
 	return InstanceGroup{name, instances, f.client.Pods(), f.client.PDBs()}
 }
+
+func (f InstanceGroupFactory) NewInstance(instance boshdir.Instance, deployment boshdir.Deployment, director boshdir.Director) Instance {
+	return Instance{instance, deployment, director, f.client.Pods()}
+}

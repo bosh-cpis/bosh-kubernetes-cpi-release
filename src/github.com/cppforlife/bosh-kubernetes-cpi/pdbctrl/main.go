@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"time"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
@@ -30,8 +31,17 @@ func main() {
 
 	igFactory := NewInstanceGroupFactory(kubeClient)
 
-	err = NewController(config.SyncInterval(), directorFactory, igFactory, logger).Run()
-	ensureNoErr(logger, "Running scheduler", err)
+	errCh := make(chan error, 1)
+
+	go func() {
+		errCh <- NewController(config.SyncInterval(), directorFactory, igFactory, logger).Run()
+	}()
+
+	go func() {
+		errCh <- NewRecoveryController(5*time.Second, directorFactory, igFactory, logger).Run()
+	}()
+
+	ensureNoErr(logger, "Running", <-errCh)
 }
 
 func basicDeps() (boshlog.Logger, boshsys.FileSystem) {
