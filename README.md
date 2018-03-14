@@ -33,6 +33,7 @@ The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF o
     - what determines container readiness/liveliness?
       - cat we use health.json?
     - how to optimize HM resurrection?
+      - added loop to resurrect quickly: branch quick_recovery
     - allow custom budgets (cross ig budget?)
     - which iaases use which drain command
       - drain timeout period? (eg `kubectl drain xxx --force --ignore-daemonsets --delete-local-data`)
