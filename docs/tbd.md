@@ -11,6 +11,7 @@ Challenges:
 Challenges:
 
 - how to resurrection ~10 things in parallel? (10 workers?)
+- lowering `diego.rep.evacuation_timeout_in_seconds` on diego cells
 
 More > 2mins (not sure why)
 
