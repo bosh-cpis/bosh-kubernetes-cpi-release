@@ -26,3 +26,9 @@ bosh create-env ~/workspace/bosh-deployment/bosh.yml \
   -v gcr_pull_secret_name=regsecret \
   -v kube_api=${kube_api_ip} \
   -o ../generic/local.yml
+
+bosh alias-env gke \
+  -e $bosh_lb_ip \
+  --ca-cert <(bosh int creds.yml --path /director_ssl/ca) \
+  --client admin \
+  --client-secret $(bosh int creds.yml --path /admin_password)
