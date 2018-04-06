@@ -2,7 +2,7 @@
 
 set -e
 
-bosh_lb_ip=35.224.114.62
+bosh_lb_ip=$(kubectl -n bosh get svc bosh-ingress -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
 kube_api_ip=104.198.249.174
 
 echo "-----> `date`: Create dev release"
