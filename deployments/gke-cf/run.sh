@@ -2,7 +2,7 @@
 
 set -e
 
-cf_lb_ip=35.224.30.194
+cf_lb_ip=$(kubectl -n bosh get svc cf-ingress -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
 
 bosh -n -d cf deploy cf-deployment/cf-deployment.yml \
   --vars-store creds.yml \
