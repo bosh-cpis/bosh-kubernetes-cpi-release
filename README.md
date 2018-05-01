@@ -1,6 +1,6 @@
 # BOSH Kubernetes CPI
 
-The BOSH Kubernetes CPI allows BOSH to manage deploy BOSH workloads such as CF onto Kubernetes clusters.
+The BOSH Kubernetes CPI allows BOSH to deploy workloads such as CF onto Kubernetes clusters.
 
 ## Use with Kube environments
 
