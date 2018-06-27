@@ -18,9 +18,9 @@
   value:
     resources:
       requests:
-        memory: 64Mi
+        memory: 2Gi
       limits:
-        memory: 1Gi
+        memory: 2Gi
 
 - type: replace
   path: /networks/name=default
