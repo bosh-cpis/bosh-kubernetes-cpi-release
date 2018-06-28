@@ -9,8 +9,10 @@ Steps:
 - `cd ./deployments/gke/`
 - create GKE cluster
   - give it a name
+  - set location to be zonal (avoids issues where Nodes and Persistent disks are created in different Zones)
   - select 2 CPUs per node
-  - select 3 nodes
+  - set Node image to Ubuntu (Container-Optimized OS (cos) does not support xfs filesystem used by Garden)
+  - select size to be 3 nodes
   - accept default service account (in advanced section;)
     - if cluster creation fails, try using different service account
 - grab cluster credentials
@@ -62,6 +64,15 @@ Nothing special.
 
 See `deployments/gke-cf/`
 
-Requirements:
+- `bosh upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent?v=3541.12 --sha1 14bd6dd50d3caa913af97846eab39e5075b240d7`
+- `cd ../deployments/gke-cf`
+- `bosh update-cloud-config ./cc.yml`
+- `kubectl create -f ../generic/lb-cf.yml`
+- Run: `kubectl -n bosh get svc` to get the External IP of the new LoadBalancer.
+- Create a wildcard DNS record of type A on GCP under Network Services with the
+  IP from the previous step.
+- Using the domain from the DNS record, run the script
 
-- must select GKE Ubuntu image instead of COS
+```
+SYSTEM_DOMAIN=YOUR-SYSTEM-DOMAIN ./run.sh
+```
