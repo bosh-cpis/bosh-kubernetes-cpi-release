@@ -2,11 +2,11 @@
 
 set -e
 
-cf_lb_ip=35.224.30.194
+: "${SYSTEM_DOMAIN:?}"
 
 bosh -n -d cf deploy cf-deployment/cf-deployment.yml \
   --vars-store creds.yml \
-  -v system_domain=${cf_lb_ip}.sslip.io \
+  -v system_domain="${SYSTEM_DOMAIN}" \
   -o cf-deployment/operations/use-compiled-releases.yml \
   -o cf-deployment/operations/experimental/use-bosh-dns.yml \
   -o cf-deployment/operations/experimental/skip-consul-cell-registrations.yml \
