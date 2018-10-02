@@ -34,5 +34,9 @@ spec:
   - name: credhub
     protocol: TCP
     port: 8844
-    targetPort: 8844    
+    targetPort: 8844
+  - name: config
+    port: 8080
+    protocol: TCP
+    targetPort: 8080    
   type: LoadBalancer
