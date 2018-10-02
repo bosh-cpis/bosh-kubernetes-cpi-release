@@ -25,7 +25,7 @@ Steps:
 - `source .kube.envrc` to load kubeconfig
 - `kubectl create -f ../generic/ns.yml`
 - `kubectl create -f ../generic/lb.yml`
-- set `export BOSH_RUN_LB_IP=` to LB IP
+- set `export BOSH_RUN_LB_IP=` to the External IP of the new LoadBalancer
   - find LB IP via `kubectl -n bosh get svc` (may have to wait a min)
 - set `export BOSH_RUN_KUBE_API_IP=` to cluster API IP
 - create GCR credential
