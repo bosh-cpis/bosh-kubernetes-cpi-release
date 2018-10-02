@@ -2,14 +2,6 @@
 
 set -e
 
-echo "-----> `date`: Create dev release"
-cpi_path=/tmp/kube-cpi
-bosh create-release --force --dir ./../../ --tarball $cpi_path
-
-echo "-----> `date`: Get latest bosh-deployment"
-rm -rf bosh-deployment
-git clone https://github.com/cloudfoundry/bosh-deployment
-
 echo "-----> `date`: Deploy Director"
 bosh create-env ./bosh-deployment/bosh.yml \
   --state=state.json \
@@ -17,6 +9,9 @@ bosh create-env ./bosh-deployment/bosh.yml \
   -o ../../bosh-deployment/k8s/cpi.yml \
   -o ../../bosh-deployment/k8s/gcp.yml \
   -o ./bosh-deployment/jumpbox-user.yml \
+  -o ./bosh-deployment/uaa.yml \
+  -o ./bosh-deployment/credhub.yml \
+  -o ./bosh-deployment/misc/config-server.yml \
   -o ../../manifests/dev.yml \
   -v director_name=kube-gke \
   -v internal_cidr="unused" \
