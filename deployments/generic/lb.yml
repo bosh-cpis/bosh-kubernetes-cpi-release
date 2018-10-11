@@ -27,4 +27,16 @@ spec:
     protocol: TCP
     port: 22
     targetPort: 22
+  - name: uaa
+    protocol: TCP
+    port: 8443
+    targetPort: 8443
+  - name: credhub
+    protocol: TCP
+    port: 8844
+    targetPort: 8844
+  - name: config
+    port: 8080
+    protocol: TCP
+    targetPort: 8080    
   type: LoadBalancer
